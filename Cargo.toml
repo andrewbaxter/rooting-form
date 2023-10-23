@@ -1,0 +1,21 @@
+[package]
+name = "rooting-form"
+version = "0.0.1"
+edition = "2021"
+license = "ISC"
+description = "Generates HTML (rooting) forms from structures"
+homepage = "https://github.com/andrewbaxter/rooting-form"
+repository = "https://github.com/andrewbaxter/rooting-form"
+readme = "readme.md"
+
+[workspace]
+members = ["proc_macros"]
+
+[dependencies]
+rooting = "0.1.6"
+rooting_forms_proc_macros = { path = "proc_macros", version = "0.0.1" }
+wasm-bindgen = "0.2.87"
+web-sys = { version = "0.3.64", features = [
+    "HtmlSelectElement",
+    "HtmlInputElement",
+] }

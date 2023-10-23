@@ -1,0 +1,23 @@
+[package]
+name = "rooting_forms_proc_macros"
+version = "0.0.1"
+edition = "2021"
+license = "ISC"
+description = "Generates HTML (rooting) forms from structures (helper crate)"
+homepage = "https://github.com/andrewbaxter/rooting-forms"
+repository = "https://github.com/andrewbaxter/rooting-forms"
+readme = "../readme.md"
+
+[lib]
+proc-macro = true
+path = "mod.rs"
+
+[dependencies]
+litrs = "0.2.3"
+proc-macro2 = "1.0.47"
+quote = "1.0.21"
+syn = "1.0.103"
+
+[dev-dependencies]
+genemichaels = "0.1.21"
+similar = "2.3.0"
