@@ -1,11 +1,11 @@
 [package]
-name = "rooting-form"
+name = "rooting-forms"
 version = "0.0.1"
 edition = "2021"
 license = "ISC"
 description = "Generates HTML (rooting) forms from structures"
-homepage = "https://github.com/andrewbaxter/rooting-form"
-repository = "https://github.com/andrewbaxter/rooting-form"
+homepage = "https://github.com/andrewbaxter/rooting-forms"
+repository = "https://github.com/andrewbaxter/rooting-forms"
 readme = "readme.md"
 
 [workspace]

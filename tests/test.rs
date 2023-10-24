@@ -1,10 +1,10 @@
-#[derive(rooting_form::Form)]
+#[derive(rooting_forms::Form)]
 pub struct Alpha {
     #[title("A")]
     pub a: i32,
 }
 
-#[derive(rooting_form::Form)]
+#[derive(rooting_forms::Form)]
 pub enum Beta {
     #[title("A")]
     A,

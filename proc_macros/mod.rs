@@ -63,7 +63,7 @@ fn build_fields_form<
         let f_name = parse_title(&f.attrs).expect(&format!("Error with attributes on field {}", f_ident));
         let f_type_ident = f.ty.to_token_stream();
         form_fields.push(quote!{
-            #f_ident: Box < dyn rooting_form:: FormState < #f_type_ident >>,
+            #f_ident: Box < dyn rooting_forms:: FormState < #f_type_ident >>,
         });
         form_construct_fields.push(quote!{
             #f_ident: #f_type_ident:: new_form(#f_name),
@@ -72,7 +72,7 @@ fn build_fields_form<
             {
                 let subelements = self.#f_ident.elements();
                 elements.extend(subelements.error.into_iter());
-                elements.push(rooting:: el("span").classes(&[rooting_form::CSS_CLASS_LABEL]).text(#f_name));
+                elements.push(rooting:: el("span").classes(&[rooting_forms::CSS_CLASS_LABEL]).text(#f_name));
                 elements.extend(subelements.elements);
             }
         });
@@ -93,12 +93,12 @@ fn build_fields_form<
         #[allow(non_camel_case_types)] struct #form_ident {
             #(#form_fields) *
         }
-        impl rooting_form:: FormState < #value_type_ident > for #form_ident {
-            fn elements(&self) -> rooting_form:: FormElements {
+        impl rooting_forms:: FormState < #value_type_ident > for #form_ident {
+            fn elements(&self) -> rooting_forms:: FormElements {
                 let mut elements = Vec::new();
                 #(#form_elements) * 
                 //. .
-                return rooting_form:: FormElements {
+                return rooting_forms:: FormElements {
                     error: None,
                     elements: elements
                 };
@@ -136,9 +136,9 @@ fn derive1(body: DeriveInput) -> TokenStream {
                             &fields.named,
                         );
                     return quote!{
-                        impl rooting_form:: Form for #t_ident {
-                            fn new_form(field: &str) -> Box < dyn rooting_form:: FormState < Self >> {
-                                use rooting_form::FormState;
+                        impl rooting_forms:: Form for #t_ident {
+                            fn new_form(field: &str) -> Box < dyn rooting_forms:: FormState < Self >> {
+                                use rooting_forms::FormState;
                                 use std::str::FromStr;
                                 use wasm_bindgen::JsCast;
                                 #form_build
@@ -169,7 +169,7 @@ fn derive1(body: DeriveInput) -> TokenStream {
                         select.ref_push(rooting:: el("option").text(#v_name).attr("value", #v_value) #selected);
                     };
                 }
-                let container = quote!(rooting::el("div").classes(&[rooting_form::CSS_CLASS_SUBFORM]));
+                let container = quote!(rooting::el("div").classes(&[rooting_forms::CSS_CLASS_SUBFORM]));
                 match &v.fields {
                     syn::Fields::Named(fields) => {
                         let subform_build =
@@ -238,9 +238,9 @@ fn derive1(body: DeriveInput) -> TokenStream {
                 }
             }
             return quote!{
-                impl rooting_form:: Form for #t_ident {
-                    fn new_form(field: &str) -> Box < dyn rooting_form:: FormState < Self >> {
-                        use rooting_form::FormState;
+                impl rooting_forms:: Form for #t_ident {
+                    fn new_form(field: &str) -> Box < dyn rooting_forms:: FormState < Self >> {
+                        use rooting_forms::FormState;
                         use std::str::FromStr;
                         use wasm_bindgen::JsCast;
                         struct FormStateImpl {
@@ -250,12 +250,12 @@ fn derive1(body: DeriveInput) -> TokenStream {
                             variant_elements: Vec<rooting::El>,
                             current_variant: std::rc::Rc<std::cell::Cell<usize>>,
                         }
-                        impl rooting_form:: FormState < #t_ident > for FormStateImpl {
-                            fn elements(&self) -> rooting_form::FormElements {
+                        impl rooting_forms:: FormState < #t_ident > for FormStateImpl {
+                            fn elements(&self) -> rooting_forms::FormElements {
                                 let mut out = vec![];
                                 out.push(self.select.clone());
                                 out.extend(self.variant_elements.clone());
-                                return rooting_form::FormElements {
+                                return rooting_forms::FormElements {
                                     error: None,
                                     elements: out,
                                 };
@@ -269,8 +269,8 @@ fn derive1(body: DeriveInput) -> TokenStream {
                         let mut elements = vec![];
                         let select =
                             rooting::el("select")
-                                .classes(&[rooting_form::CSS_CLASS_SMALL_INPUT])
-                                .attr(rooting_form::ATTR_LABEL, field);
+                                .classes(&[rooting_forms::CSS_CLASS_SMALL_INPUT])
+                                .attr(rooting_forms::ATTR_LABEL, field);
                         elements.push(select.clone());
                         let mut variant_parse: Vec < Box < dyn Fn() -> Result < #t_ident,
                         () >>>
@@ -288,18 +288,18 @@ fn derive1(body: DeriveInput) -> TokenStream {
                                         &event
                                             .target()
                                             .unwrap()
-                                            .dyn_into::<rooting_form::republish::HtmlSelectElement>()
+                                            .dyn_into::<rooting_forms::republish::HtmlSelectElement>()
                                             .unwrap()
                                             .value(),
                                     ).unwrap();
                                 variant.set(index);
                                 for (e_index, v) in variant_elements.iter().enumerate() {
-                                    v.ref_modify_classes(&[(rooting_form::CSS_CLASS_HIDDEN, e_index != index)]);
+                                    v.ref_modify_classes(&[(rooting_forms::CSS_CLASS_HIDDEN, e_index != index)]);
                                 }
                             }
                         });
                         for v in &variant_elements[1..] {
-                            v.ref_classes(&[rooting_form::CSS_CLASS_HIDDEN]);
+                            v.ref_classes(&[rooting_forms::CSS_CLASS_HIDDEN]);
                         }
                         return Box::new(FormStateImpl {
                             select: select,
@@ -373,28 +373,28 @@ struct Alpha {
     a: i32,
 }
 "#, quote!(
-            impl rooting_form::Form for Alpha {
-                fn new_form(field: &str) -> Box<dyn rooting_form::FormState<Self>> {
-                    use rooting_form::FormState;
+            impl rooting_forms::Form for Alpha {
+                fn new_form(field: &str) -> Box<dyn rooting_forms::FormState<Self>> {
+                    use rooting_forms::FormState;
                     use std::str::FromStr;
                     use wasm_bindgen::JsCast;
 
                     struct FormStateImpl {
-                        a: Box<dyn rooting_form::FormState<i32>>,
+                        a: Box<dyn rooting_forms::FormState<i32>>,
                     }
 
-                    impl rooting_form::FormState<Alpha> for FormStateImpl {
-                        fn elements(&self) -> rooting_form::FormElements {
+                    impl rooting_forms::FormState<Alpha> for FormStateImpl {
+                        fn elements(&self) -> rooting_forms::FormElements {
                             let mut elements = Vec::new();
                             {
                                 let subelements = self.a.elements();
                                 elements.extend(subelements.error.into_iter());
                                 elements.push(
-                                    rooting::el("span").classes(&[rooting_form::CSS_CLASS_LABEL]).text("A"),
+                                    rooting::el("span").classes(&[rooting_forms::CSS_CLASS_LABEL]).text("A"),
                                 );
                                 elements.extend(subelements.elements);
                             }
-                            return rooting_form::FormElements {
+                            return rooting_forms::FormElements {
                                 error: None,
                                 elements: elements,
                             };
@@ -439,9 +439,9 @@ enum Alpha {
 }
 "#,
             quote!{
-                impl rooting_form::Form for Alpha {
-                    fn new_form(field: &str) -> Box<dyn rooting_form::FormState<Self>> {
-                        use rooting_form::FormState;
+                impl rooting_forms::Form for Alpha {
+                    fn new_form(field: &str) -> Box<dyn rooting_forms::FormState<Self>> {
+                        use rooting_forms::FormState;
                         use std::str::FromStr;
                         use wasm_bindgen::JsCast;
 
@@ -452,12 +452,12 @@ enum Alpha {
                             current_variant: std::rc::Rc<std::cell::Cell<usize>>,
                         }
 
-                        impl rooting_form::FormState<Alpha> for FormStateImpl {
-                            fn elements(&self) -> rooting_form::FormElements {
+                        impl rooting_forms::FormState<Alpha> for FormStateImpl {
+                            fn elements(&self) -> rooting_forms::FormElements {
                                 let mut out = vec![];
                                 out.push(self.select.clone());
                                 out.extend(self.variant_elements.clone());
-                                return rooting_form::FormElements {
+                                return rooting_forms::FormElements {
                                     error: None,
                                     elements: out,
                                 };
@@ -472,8 +472,8 @@ enum Alpha {
                         let mut elements = vec![];
                         let select =
                             rooting::el("select")
-                                .classes(&[rooting_form::CSS_CLASS_SMALL_INPUT])
-                                .attr(rooting_form::ATTR_LABEL, field);
+                                .classes(&[rooting_forms::CSS_CLASS_SMALL_INPUT])
+                                .attr(rooting_forms::ATTR_LABEL, field);
                         elements.push(select.clone());
                         let mut variant_parse: Vec<Box<dyn Fn() -> Result<Alpha, ()>>> = vec![];
                         let mut variant_elements = vec![];
@@ -482,13 +482,13 @@ enum Alpha {
                                 rooting::el("option").text("A").attr("value", "0").attr("selected", "selected"),
                             );
                             variant_parse.push(Box::new(|| Ok(Alpha::A)));
-                            variant_elements.push(rooting::el("div").classes(&[rooting_form::CSS_CLASS_SUBFORM]));
+                            variant_elements.push(rooting::el("div").classes(&[rooting_forms::CSS_CLASS_SUBFORM]));
                         }
                         {
                             select.ref_push(rooting::el("option").text("B").attr("value", "1"));
                             let subform = i32::new_form("B");
                             let subform_elements = subform.elements();
-                            let container = rooting::el("div").classes(&[rooting_form::CSS_CLASS_SUBFORM]);
+                            let container = rooting::el("div").classes(&[rooting_forms::CSS_CLASS_SUBFORM]);
                             if let Some(error) = subform_elements.error {
                                 container.ref_push(error);
                             }
@@ -501,23 +501,23 @@ enum Alpha {
                             let subform = {
                                 #[allow(non_camel_case_types)]
                                 struct Alpha_C_FormState {
-                                    c: Box<dyn rooting_form::FormState<i32>>,
+                                    c: Box<dyn rooting_forms::FormState<i32>>,
                                 }
 
-                                impl rooting_form::FormState<Alpha> for Alpha_C_FormState {
-                                    fn elements(&self) -> rooting_form::FormElements {
+                                impl rooting_forms::FormState<Alpha> for Alpha_C_FormState {
+                                    fn elements(&self) -> rooting_forms::FormElements {
                                         let mut elements = Vec::new();
                                         {
                                             let subelements = self.c.elements();
                                             elements.extend(subelements.error.into_iter());
                                             elements.push(
                                                 rooting::el("span")
-                                                    .classes(&[rooting_form::CSS_CLASS_LABEL])
+                                                    .classes(&[rooting_forms::CSS_CLASS_LABEL])
                                                     .text("C"),
                                             );
                                             elements.extend(subelements.elements);
                                         }
-                                        return rooting_form::FormElements {
+                                        return rooting_forms::FormElements {
                                             error: None,
                                             elements: elements,
                                         };
@@ -542,7 +542,7 @@ enum Alpha {
                                 Box::new(FormStateImpl { c: i32::new_form("C") })
                             };
                             let subform_elements = subform.elements();
-                            let container = rooting::el("div").classes(&[rooting_form::CSS_CLASS_SUBFORM]);
+                            let container = rooting::el("div").classes(&[rooting_forms::CSS_CLASS_SUBFORM]);
                             if let Some(error) = subform_elements.error {
                                 container.ref_push(error);
                             }
@@ -559,18 +559,18 @@ enum Alpha {
                                         &event
                                             .target()
                                             .unwrap()
-                                            .dyn_into::<rooting_form::republish::HtmlSelectElement>()
+                                            .dyn_into::<rooting_forms::republish::HtmlSelectElement>()
                                             .unwrap()
                                             .value(),
                                     ).unwrap();
                                 variant.set(index);
                                 for (e_index, v) in variant_elements.iter().enumerate() {
-                                    v.ref_modify_classes(&[(rooting_form::CSS_CLASS_HIDDEN, e_index != index)]);
+                                    v.ref_modify_classes(&[(rooting_forms::CSS_CLASS_HIDDEN, e_index != index)]);
                                 }
                             }
                         });
                         for v in &variant_elements[1..] {
-                            v.ref_classes(&[rooting_form::CSS_CLASS_HIDDEN]);
+                            v.ref_classes(&[rooting_forms::CSS_CLASS_HIDDEN]);
                         }
                         return Box::new(FormStateImpl {
                             select: select,

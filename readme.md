@@ -3,12 +3,12 @@ This provides traits and a derive macro for generating rooting HTML forms from s
 **Example**
 
 ```
-#[derive(rooting_form::Form)]
+#[derive(rooting_forms::Form)]
 struct Creds {
     #[title("Your username")]
     username: String,
     #[title("Your password")]
-    password: rooting_form::Password,
+    password: rooting_forms::Password,
 }
 
 let creds_form_state = MyStruct::new_form();
